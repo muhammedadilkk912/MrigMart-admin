@@ -8,7 +8,7 @@ const mongodb=require('./src/config/db')
 const Cloudinary=require('./src/config/Cloudinaryconfig')
 
 const app=express()
-app.use(cors({  
+app.use(cors({    
     origin: process.env.Base_Origin,
     credentials: true // ✅ Important for cookies/sessions
 }));
