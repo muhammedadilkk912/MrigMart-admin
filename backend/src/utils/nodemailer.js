@@ -23,11 +23,11 @@ const sendMail = async (to, subject, text) => {
 
   try {
     const info = await transporter.sendMail({
-      from: `"PETCARE " <${process.env.EMAIL_USER}>`,
+      from: `"MrigMart " <${process.env.EMAIL_USER}>`,
       to,
       subject,
       text,
-      html: `<div ><h1>Petcare</h1> ${text} <div>`
+       html: `<div ><h1>Petcare</h1> ${text} <div>`
     });
     console.log("✅ Email sent:", info.response);
   } catch (error) {

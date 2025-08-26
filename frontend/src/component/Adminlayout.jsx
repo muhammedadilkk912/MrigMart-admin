@@ -13,6 +13,8 @@ const AdminLayout = () => {
   const [openalert,setOpenalert]=useState(false)
   const [dropdown,setDropdown]=useState(false)
   const loading=useSelector((state)=>state.loading.isLoading)
+  const profile=useSelector((state)=>state.auth.profile)
+  console.log("profile=",profile)
   console.log("laoding state=",loading)
                   console.log("inside the button",openalert)
 
@@ -114,7 +116,7 @@ const AdminLayout = () => {
         onClick={() => setDropdown(!dropdown)}
       >
         <img 
-          src="https://randomuser.me/api/portraits/women/44.jpg" 
+          src={profile || "https://randomuser.me/api/portraits/women/44.jpg" }
           alt="User" 
           className="h-8 w-8 rounded-full object-cover"
         />

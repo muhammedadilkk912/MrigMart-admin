@@ -55,12 +55,13 @@ const signin=async(req,res)=>{
             id:user._id,
             email:user.email,
             isVerified:user.isVerified,
-            role:user.role
+            role:user.role,
+            profile:user.profile
 
 
         }
        
-        // Set the JWT in a cookie
+        // Set the JWT in a cookie  
         res.cookie("admin_token", token, {
             httpOnly: true,
              secure:process.env.NODE_ENV === 'production' , 

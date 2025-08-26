@@ -742,8 +742,18 @@ const adduser = async (req, res) => {
       role: "user",
     });   
     console.log(user);
-    const message = `<strong>Hello sir</strong>,\n You have been added to our petcare application . 
-   Here are your login details:\n <strong>Email:</strong> ${email} \n <strong>Password:</strong> ${password} \n Petcare Team`;
+  const message = `
+  <strong>Hello sir</strong>,<br/>
+  You have been added to our MrigMart application.<br/><br/>
+  Here are your login details:<br/>
+  <strong>Email:</strong> ${email}<br/>
+  <strong>Password:</strong> ${password}<br/><br/>
+  You can access the application using the link below:<br/>
+  <a href="https://mrig-mart-iuk2.vercel.app" target="_blank">Click here to log in</a><br/><br/>
+  Regards,<br/>
+  MrigMart Team
+`;
+
 
     await sendMail(email, "Login details", message);
     await user.save();
@@ -872,13 +882,41 @@ const add_seller = async (req, res) => {
     }
 
     console.log("seller=", seller);
-    let text = `
-  Dear sir,<br>
-  You have been added to the Ore Seller Platform.<br>
-  <strong>Login credentials:</strong><br>
-  Email: ${seller.email}<br>
-  Password: ${password}
+   let text = `
+  <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
+    <h2 style="color: #2c3e50;">Welcome to Ore Seller Platform</h2>
+    
+    <p>Dear Sir,</p>
+    <p>
+      You have been successfully added to the <strong>MrigMart Seller Platform</strong>.
+    </p>
+    
+    <div style="background: #f9f9f9; border: 1px solid #ddd; padding: 15px; border-radius: 8px; margin: 20px 0;">
+      <h3 style="margin-top: 0; color: #444;">Login Credentials</h3>
+      <p><strong>Email:</strong> ${seller.email}</p>
+      <p><strong>Password:</strong> ${password}</p>
+    </div>
+    
+    <p>
+      You can log in to your account using the button below:
+    </p>
+    
+    <p>
+      <a href="https://mrig-mart-seller.vercel.app" 
+         style="display: inline-block; background: #3498db; color: #fff; padding: 10px 18px; 
+                border-radius: 5px; text-decoration: none; font-weight: bold;">
+        Login to Platform
+      </a>
+    </p>
+    
+    <p style="margin-top: 30px; font-size: 14px; color: #666;">
+      If you did not request this account, please ignore this email.
+    </p>
+    
+    <p>Best Regards,<br> MrigMart Team</p>
+  </div>
 `;
+
 
     await sendMail(seller.email, "Login credential", text);
     await seller.save();
@@ -1252,6 +1290,7 @@ if (status === 'cancelled') {
 const getReviews=async(req,res)=>{
   const {page}=req.params;
   const skip=(page-1)*10;
+  console.log("page=",page,"skip=",skip)
   const{search,rating}=req.query;
   console.log("query=",req.query)
   console.log(page)
@@ -1264,7 +1303,8 @@ const getReviews=async(req,res)=>{
       as: 'user'
     }
   },
-  { $unwind: '$user' },
+   { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
+  
 
   {
     $lookup: {
@@ -1341,12 +1381,15 @@ const countPipeline = [
 ];
  
   try {
-    const reviews=await reviewModel.aggregate(pipeline)
-    const result=await reviewModel.aggregate(countPipeline)
+    
+
+      const reviews=await reviewModel.aggregate(pipeline)
+      const result=await reviewModel.aggregate(countPipeline)
+    console.log("result=",result)
     const totalCount = result[0]?.totalCount || 0;
     //  const pageSize = 10;
     const totalPages = Math.ceil(totalCount / 10);
-    console.log(reviews)
+    console.log("length",reviews.length)
     res.status(200).json({message:'review got it',reviews,totalPages,totalCount})
   } catch (error) {
     console.log("error in getting reviews",error)
@@ -1664,6 +1707,85 @@ res.status(200).json({message:'products got',product})
   }
 }
 
+const getuserAllDetails=async(req,res)=>{
+  const {id}=req.params
+  if(!id){
+    return res.status(400).json({message:'id not found'})
+  }
+
+  try {
+const user = await userModel.aggregate([
+  {
+    $match: { _id: new mongoose.Types.ObjectId(id) }
+  },
+  {
+    $lookup: {
+      from: 'addresses',
+      localField: '_id',         // user's _id
+      foreignField: 'user',      // address.user refers to user's _id
+      as: 'address'
+    }
+  }
+]);
+
+    console.log("user=",user)
+    res.status(200).json({message:'user details got it',user})
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({message:'internl server error'})
+  }
+}
+
+const getUserPurchaseHistory=async(req,res)=>{
+  console.log("inside the purchase history")
+  const {id}=req.params
+    if(!id){
+    return res.status(400).json({message:'id not found'})
+  }
+  try {
+   const orders = await orderModel.aggregate([
+  {
+    $match: { user: new mongoose.Types.ObjectId(id) }
+  },
+  {
+    $unwind: '$items'
+  },
+  {
+    $unwind: '$items.products'
+  },
+  {
+    $lookup: {
+      from: 'products',
+      localField: 'items.products.productId',
+      foreignField: '_id',
+      as: 'productDetails'
+    }
+  },
+  {
+    $unwind: {
+      path: '$productDetails',
+      preserveNullAndEmptyArrays: true
+    }
+  },
+  {
+    $project: {
+      _id: 1,
+      createdAt: 1,
+      status: '$items.products.status',
+      price: '$items.products.price',
+      quantity: '$items.products.quantity',
+      product: '$productDetails'
+    }
+  }
+]);
+
+    console.log("orders=",orders)
+    res.status(200).json({message:'purchase history got it',orders})
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({message:'internal serer error'})
+  }
+}
 
 
 module.exports = {
@@ -1709,5 +1831,7 @@ module.exports = {
   addBanner,
   updateBanner,
   update_bannerStatus,allproduct_details,
-  getProductsForBanners
+  getProductsForBanners,
+  getuserAllDetails,
+  getUserPurchaseHistory
 };

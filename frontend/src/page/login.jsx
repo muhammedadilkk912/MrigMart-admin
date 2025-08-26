@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 import axiosInstance from '../configure/axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import {login} from '../redux/authSlice'
+import {login,setProfile} from '../redux/authSlice'
 
 
 const CenteredLoginPage = () => {
@@ -67,14 +67,22 @@ const CenteredLoginPage = () => {
          setLoading(true)
          console.log("the data=",data)
          const response = await axiosInstance.post("/auth/signin", data);
+           console.log("login res",response);
+           let photo=response?.data?.userdata?.profile 
+           if(photo){
+                 dispatch(setProfile(photo))
+           }
+         
+          
           dispatch(login())
-        console.log(response);
+          
+       
        
         // dispatch(setLoading(true))
         toast.success(response.data.message);
-        if(response){
+        // if(response.data.){
          
-        }
+        // }
         // if(response.status===200){
         //   dispatch(loginsuccess({
         //     user:response.data.userdata

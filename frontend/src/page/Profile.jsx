@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch,useSelector } from 'react-redux';
 import { showLoading,hideLoading } from '../redux/loadeSlic';
+import { setProfile } from '../redux/authSlice';
 import axiosInstance from '../configure/axios';
 import {toast} from 'react-toastify'
 
 const ProfilePage = () => {
     const dispatch=useDispatch()
   const [isEditing, setIsEditing] = useState(false);
+  const Header_Profile=useSelector((state)=>state.auth.profile)
   
    const [formdata, setFormdata] = useState({
     name:"",
@@ -33,6 +35,12 @@ const getprofile = async () => {
   try {
     const response = await axiosInstance.get('/admin/profile');
     const profileData = response.data.profile;
+
+    if( profileData?.profile && (profileData.profile !== Header_Profile)){
+      console.log("insididdididiii")
+      dispatch(setProfile(profileData.profile))
+
+    }
 
     const formattedData = {
       name: profileData.username, // Use .name if that's actually returned

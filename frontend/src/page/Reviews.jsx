@@ -17,6 +17,7 @@ const AdminReviewsPage = () => {
   const [selectedReview, setSelectedReview] = useState(null);
   const [page,setPage]=useState(1)
   const [totalPage,setTotalPage]=useState()
+  const [totalOrder,setTotalOrder]=useState()
 
    const [searchDebounce]=useDebounce(productSearch,500)
 
@@ -39,12 +40,13 @@ const AdminReviewsPage = () => {
      if (params.length > 0) {
       url += `?${params.join("&")}`;
     }
-    try {
+    try {  
       dispatch(showLoading())
       const response = await axiosInstance.get(url);
       console.log(response)
        setReviews(response.data.reviews);
        setTotalPage(response.data.totalPages)
+       setTotalOrder(response?.data?.totalCount)
     } catch (error) {
       console.log(error);
     }finally{  
@@ -184,8 +186,8 @@ const AdminReviewsPage = () => {
                         <FaUser className="text-gray-500" />
                       </div> */}
                       <div className="ml-2">
-                        <div className="text-sm font-medium text-gray-900">{review.user.username}</div>
-                        <div className="text-sm text-gray-500">{review.user.email}</div>
+                        <div className="text-sm font-medium text-gray-900">{review?.user?.username || ' account deleted'}</div>
+                        <div className="text-sm text-gray-500">{review?.user?.email}</div>
                       </div>
                     </div>
                   </td>
@@ -240,13 +242,7 @@ const AdminReviewsPage = () => {
 </td>
                   <td className=" px-4 py-2 whitespace-nowrap text-sm font-medium">
                     <div className="flex space-x-2">
-                      <button 
-                        className="text-blue-600 hover:text-blue-900"
-                        onClick={() => {/* Add view functionality */}}
-                        title='view review'
-                      >
-                        <FaEye className="inline mr-1" /> 
-                      </button>
+                     
                       <button 
                         className="text-red-600 hover:text-red-900"
                         onClick={() => handleDeleteReview(review._id)}
@@ -266,7 +262,7 @@ const AdminReviewsPage = () => {
       {/* Pagination placeholder */}
       <div className="mt-4 flex justify-between items-center">
         <div className="text-sm text-gray-500">
-          Showing 1 to {reviews.length} of {reviews.length} entries
+          Showing 1 to {reviews.length} of {totalOrder} entries
         </div>
         {
           totalPage !== 1 &&(

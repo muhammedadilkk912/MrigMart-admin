@@ -392,7 +392,7 @@ const Order = () => {
                       onClick={() => gotopage(page + 1)}
                       disabled={page === totalPage}
                       className={`px-3 py-1 border rounded-md text-sm font-medium ${
-totalPage                          ? "border-gray-400 text-gray-400 cursor-not-allowed"
+                           totalPage=== page  ? "border-gray-400 text-gray-400 cursor-not-allowed"
                           : "border-gray-700 text-gray-700 hover:bg-gray-50"
                       }`}
                     >

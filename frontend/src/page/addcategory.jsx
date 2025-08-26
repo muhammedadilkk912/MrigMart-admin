@@ -12,6 +12,7 @@ function AddCategory() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [categoryName, setCategoryName] = useState("");
+  const [editcat_name,setEditcat_Name]=useState(null)
   const [fields, setFields] = useState([
     { name: "", placeholder: "", type: "", Options: [] },
   ]);
@@ -29,6 +30,7 @@ function AddCategory() {
       const response = await axiosInstance.get(`/admin/category/${id}`);
       console.log("respone get category=", response);
       setCategoryName(response.data.category.category);
+      setEditcat_Name(response.data.category.category)
       let corefields = response.data.category.specific_fields;
       setFields(
         corefields.map((val) => ({
@@ -160,14 +162,20 @@ function AddCategory() {
         if (id) {
           // console.log("initial data=",JSON.stringify(editcategory))
           // console.log("current data",JSON.stringify(fields))
-          console.log(editcategory);
+          console.log("edit",editcategory);
           console.log("fields=", fields);
           const check = JSON.stringify(editcategory) == JSON.stringify(fields);
-          if (check) {
+           let check_cat_name=editcat_name == categoryName ? true :false
+           console.log(editcat_name,"=",categoryName)
+
+           console.log("validate=",check_cat_name)
+
+          //  return null
+          if (check && check_cat_name) {
            return toast.error("no changes were made");
             
           }
-
+   
           dispatch(showLoading());
           const response = await axiosInstance.put(
             `admin/updatecategory/${id}`,

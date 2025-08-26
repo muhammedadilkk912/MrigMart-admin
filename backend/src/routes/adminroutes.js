@@ -7,7 +7,8 @@ const {getproducts,getcustomers,getsellers,dashboard,logout,change_status,add_ca
     delete_category,getcategory_withid,update_category,change_statusbyuser,delete_user,user_byfilter,changestatus_bypr,
     deleteproduct,deleteseller,category,profile,update_profile,Addproduct,getproductwith_id,updatedproduct,adduser,
     getuser_id,update_user,add_seller,getSeller_id,update_seller,View_seller,getbanners,getorders,order_status_change,getReviews,
-    deletereview,change_reviewstatus,deleteBanner,addBanner,updateBanner,update_bannerStatus,allproduct_details,getProductsForBanners
+    deletereview,change_reviewstatus,deleteBanner,addBanner,updateBanner,update_bannerStatus,allproduct_details,getProductsForBanners,getuserAllDetails,
+    getUserPurchaseHistory
 }=require('../controllers/admincontroller')
 const {getcards, topProducts,getdash_orders,getchartDetails}=require('../controllers/dashboardcontroller')
 const router=express.Router()
@@ -56,6 +57,8 @@ router.get('/searchusers',protectroute,authorizerole('admin'),searchusers)
 router.put('/user/change_status/:id/:status',protectroute,authorizerole('admin'),change_statusbyuser)
 router.delete('/user/delete/:id',protectroute,authorizerole('admin'),delete_user)
 router.get('/user/status/:status',protectroute,authorizerole('admin'),user_byfilter)
+router.get('/useralldetails/:id',protectroute,authorizerole('admin'),getuserAllDetails)
+router.get('/user/purchasrhistory/:id',protectroute,authorizerole('admin'),getUserPurchaseHistory)
 
 router.get('/existingbanners',protectroute,authorizerole('admin'),getbanners)
 router.delete('/delete_banner/:id',protectroute,authorizerole('admin'),deleteBanner)  

@@ -372,6 +372,29 @@ const Seller_reg = () => {
    
 
   }
+  useEffect(() => {
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleNext(); // same logic as button click
+    }
+  };
+
+  window.addEventListener('keydown', handleKeyDown);
+  return () => window.removeEventListener('keydown', handleKeyDown);
+}, [activeTab]);
+         
+  const handleNext = () => {
+  if (validateSection(activeTab)) {
+    if (activeTab === 'Personal') {
+      setActiveTab('business');
+    } else if (activeTab === 'business') {
+      setActiveTab('address');
+    } else if (activeTab === 'address') {
+      setActiveTab('banking');
+    }
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
@@ -864,20 +887,21 @@ const Seller_reg = () => {
               {activeTab !== "banking" && (
                 <button
                   type="button"
-                  onClick={() => {
-                    if (validateSection(activeTab)) {
-                      console.log(validateSection(activeTab))
-                      console.log(activeTab)
-                     if(activeTab === 'Personal'){
-                      console.log("inside the activeTab")
-                      setActiveTab('business')
-                     } else if(activeTab === 'business'){
-                      setActiveTab('address')
-                     }else if(activeTab==='address'){
-                      setActiveTab('banking')
-                     }
-                    }
-                  }}
+                  // onClick={() => {
+                  //   if (validateSection(activeTab)) {
+                  //     console.log(validateSection(activeTab))
+                  //     console.log(activeTab)
+                  //    if(activeTab === 'Personal'){
+                  //     console.log("inside the activeTab")
+                  //     setActiveTab('business')
+                  //    } else if(activeTab === 'business'){
+                  //     setActiveTab('address')
+                  //    }else if(activeTab==='address'){
+                  //     setActiveTab('banking')
+                  //    }
+                  //   }
+                  // }}
+                   onClick={handleNext}
                   className="ml-auto inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   Next
